@@ -24,7 +24,7 @@ def load_renderer(renderer_name: str):
     return getattr(module, 'render')
 
 
-def process_file(input_path: Path, output_path: Path):
+def process_file(input_path: Path, output_path: Path, context):
     with open(input_path, 'r', encoding='utf-8') as f:
         input = f.read()
 
@@ -34,19 +34,25 @@ def process_file(input_path: Path, output_path: Path):
     template = load_template(metadata['template'])
     render = load_renderer(metadata['renderer'])
 
+    data = { 'metadata': metadata, 'content': render(input), 'context': context }
     with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(template.render({
-            'metadata': metadata,
-            'content': render(input),
-        }))
+        f.write(template.render(data))
+    
+    return metadata
 
 
 def process_dir(input_path: Path, output_path: Path, extensions: str):
-    for dirpath, _, filenames in input_path.walk(top_down=False):
-        target_folder = Path(output_path, *dirpath.parts[1:])
-        target_folder.mkdir()
-        for filename in filenames:
-            process_file(dirpath / filename, target_folder / filename)
+    output_path.mkdir()
+
+    dir_results = {}
+    for child_dir in filter(lambda f: f.is_dir(), input_path.iterdir()):
+        dir_results[child_dir.name] = process_dir(child_dir, output_path / child_dir.relative_to(input_path), extensions)
+
+    file_results = {}
+    for child_file in filter(lambda f: f.is_file() and f.suffix in extensions, input_path.iterdir()):
+        file_results[child_file.name] = process_file(child_file, output_path / child_file.relative_to(input_path), dir_results)
+
+    return {**dir_results, **file_results}
 
 
 def process(input_path: Path, output_path: Path, templates_path: Path, _renderers_path: Path, extensions: str) -> None:

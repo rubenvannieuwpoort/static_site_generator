@@ -19,6 +19,9 @@ The objects that are passed to the Jinja template are of the form
     "content": {
         ...<the content of the file>...
     },
+    "context": {
+        ...<a dictionary with file/folder names; files map to metadata, folders to arrays>...
+    }
 }
 ```
 
