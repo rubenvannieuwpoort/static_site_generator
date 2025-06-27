@@ -1,8 +1,9 @@
 import argparse
 from pathlib import Path
-from process import process
+from velto.process import process
 
-if __name__ == "__main__":
+
+def main() -> None:
     parser = argparse.ArgumentParser()
 
     parser.add_argument('input', help='input file')

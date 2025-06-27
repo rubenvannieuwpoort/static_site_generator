@@ -18,6 +18,7 @@ def load_renderer(renderer_name: str):
     file_path = os.path.join(renderers_path, renderer_name)
 
     spec = importlib.util.spec_from_file_location(renderer_name, file_path)
+    print(file_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 

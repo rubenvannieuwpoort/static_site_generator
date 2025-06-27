@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "velto"
+version = "0.1"
+description = "A fast and minimal static site generator"
+authors = [{ name = "Ruben van Nieuwpoort", email = "ruben@vannieuwpoort.nl" }]
+dependencies = [
+	"Jinja2==3.1.6"
+]
+
+[project.scripts]
+velto = "velto.cli:main"
